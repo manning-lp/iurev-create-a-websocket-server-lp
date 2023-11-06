@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
+  "embed"
 )
 
 const welcomeMessage = "Welcome to support. My name is Rheo. How can I help you today?"
 
-var indexHtmlPath, _ = filepath.Abs("milestone1/index.html")
-var indexHtml, _ = os.ReadFile(indexHtmlPath)
+//go:embed index.html
+var indexHtml string
 
 var upgrader = websocket.Upgrader{}
 
@@ -38,9 +37,10 @@ func ChatHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 		resMessage := strings.ToUpper(message)
 		conn.WriteMessage(websocket.TextMessage, []byte(resMessage))
-		fmt.Println(message)
 	}
 	fmt.Println("ws connection upgraded succesfully")
 }
 
-var staticHandler = http.FileServer(http.Dir("./milestone1/static"))
+//go:embed static/*
+var content embed.FS
+var staticHandler = http.FileServer(http.FS(content))
