@@ -8,10 +8,9 @@ package milestone1
 
 import "net/http"
 
-
 func Serve() {
-  http.HandleFunc("/", RootHandler)
-  http.Handle("/static", staticHandler)
+	http.HandleFunc("/", RootHandler)
+	http.Handle("/static", staticHandler)
 	http.HandleFunc("/chat", ChatHandler)
 
 	http.ListenAndServe(":8080", nil)
