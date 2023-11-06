@@ -1,11 +1,11 @@
 package milestone1
 
 import (
+	"embed"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"strings"
-  "embed"
 )
 
 const welcomeMessage = "Welcome to support. My name is Rheo. How can I help you today?"
