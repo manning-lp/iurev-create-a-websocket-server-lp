@@ -1,9 +1,49 @@
+package milestone1
 
-// Register a handler function for the / path that will respond to a request by sending an HTML page as a response.
-// The page will also load the necessary JavaScript client to create the WebSocket connection with the server.
-// You will find the index.html and the JavaScript and CSS files to be used already inside the milestone1 directory of your project.
-// They were automatically created for you via the GitHub integration.
+// todo: learn what are packages
+// todo: learn named imports
+// todo: learn about passing functions into functions. Are they copied or passed by reference?
+// todo: learn http.Error status int
+// todo: learn about second arg for ListenAndServe
 
+import (
+	"fmt"
+	"net/http"
+  "strings"
+  "github.com/gorilla/websocket"
+)
 
-// To serve the JavaScript and CSS files from your server, you will need to register a handler function for /static requests that will read the corresponding file from the file system and send the contents back as the response.
-// You will find the http.FileServer handler useful for this (see "func FileServer" for details).
+const welcomeMessage = "Welcome to support. My name is Rheo. How can I help you today?"
+
+var upgrader = websocket.Upgrader{}
+
+func Handler(writer http.ResponseWriter, request *http.Request) {
+  conn, err := upgrader.Upgrade(writer, request, nil)
+  if err != nil {
+    fmt.Println("ws connection upgrade failed", err)
+    http.Error(writer, "ws connection upgrade failed", 1)
+    return
+  }
+  // messageType, p, err := conn.ReadMessage()
+  conn.WriteMessage(websocket.TextMessage, []byte(welcomeMessage));
+
+  for {
+    _, bMessage, err := conn.ReadMessage()
+    message := string(bMessage[:])
+    
+    if err != nil {
+      fmt.Println("err")
+    }
+    resMessage := strings.ToUpper(message)
+    conn.WriteMessage(websocket.TextMessage, []byte(resMessage));
+    fmt.Println(message)
+  }
+  fmt.Println("ws connection upgraded succesfully")
+}
+
+func Serve() {
+  http.Handle("/", http.FileServer(http.Dir("./milestone1")))
+	http.HandleFunc("/chat", Handler)
+
+	http.ListenAndServe(":8080", nil)
+}

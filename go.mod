@@ -1,4 +1,4 @@
-module main
+module github.com/iurev/ws
 
 go 1.21.3
 
